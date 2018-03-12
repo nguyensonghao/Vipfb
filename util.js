@@ -5,40 +5,48 @@ var request = require('request');
 var urlRequest = "https://vipfb.in/request_panel.php";
 var url = "https://vipfb.in";
 
-phantom.create().then(ph => {
-    _ph = ph;
-    return _ph.createPage();
-}).then(page => {
-    _page = page;
-    _page.property('viewportSize', {width: 900, height: 600}).then(function() {
-        return _page.open(url);
-    });
-}).then(status => {
-	setTimeout(function () {
-		_page.evaluate(function() {
-            var token = "EAAAAUaZA8jlABALKtpGHqbxr5F77kehEU67a2GQT58dhTuZCAhAcURGkRgliZBT3eSB0frInFLVQf45wXBCcUR5La2JS6iKZCPPEZCWMCyl2aTqx2SPraxFxk7j4RI81KUVEsmiZB2iSIccxR8sVRfabPL3sNqxDVFAHlO2zLvmwZDZD";
-            document.querySelectorAll('#LoginD input[type="text"]')[0].value = token;
-            document.querySelectorAll('#LoginD button[type="submit"]')[0].click();
-            return 0;
-        });
+module.exports = {
+	sendRequestAddFriends: function (token, userId) {
+		return new Promise(function (resolve, reject) {
+			var _ph, _page;
+			phantom.create().then(ph => {
+			    _ph = ph;
+			    return _ph.createPage();
+			}).then(page => {
+			    _page = page;
+			    _page.property('viewportSize', {width: 900, height: 600}).then(function() {
+			        return _page.open(url);
+			    });
+			}).then(status => {
+				setTimeout(function () {
+					_page.evaluate(function(token) {
+			            document.querySelectorAll('#LoginD input[type="text"]')[0].value = token;
+			            document.querySelectorAll('#LoginD button[type="submit"]')[0].click();
+			            return 0;
+			        }, token);
 
-    	setTimeout(function () {
-            var time = new Date().getTime();
-            var imageName = './captchaImage/' + time + ".png";
-            captureRequest(_page, imageName, function () {
-            	setTimeout(function () {
-            		_page.close();
-		    		_ph.exit();
-            	}, 1000);
-            })
-        }, 5000);
-	}, 5000);
-}).catch(() => {
-    _page.close();
-    _ph.exit();
-});
+			    	setTimeout(function () {
+			            var time = new Date().getTime();
+			            var imageName = './captchaImage/' + time + ".png";
+			            captureRequest(userId, _page, imageName, function () {
+			            	setTimeout(function () {
+			            		_page.close();
+					    		_ph.exit();
+					    		resolve({status: true});
+			            	}, 1000);
+			            })
+			        }, 5000);
+				}, 5000);
+			}).catch(() => {
+			    _page.close();
+			    _ph.exit();
+			    resolve({status: false});
+			});
+		})
+	}
+}
 
-function captureRequest (page, name, callback) {
+function captureRequest (userId, page, name, callback) {
 	page.property('viewportSize', {width: 900, height: 600}).then(function() {
         return page.open(urlRequest);
     }).then(function () {
@@ -64,7 +72,7 @@ function captureRequest (page, name, callback) {
 					        	var captchaText = key;
 					        	console.log(captchaText);
 					        	page.evaluate(function (captchaText) {
-			                    	document.querySelectorAll('form input[name="id"]')[0].value = '100004906039322';
+			                    	document.querySelectorAll('form input[name="id"]')[0].value = userId;
 			                    	document.querySelectorAll('form input[name="captchaBox"]')[0].value = captchaText;
 			                    	document.querySelectorAll('form button[type="submit"]')[0].click();
 			                    	return captchaText;
