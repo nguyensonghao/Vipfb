@@ -19,7 +19,12 @@ $(document).ready(function () {
 				},
 				success: function (data) {
 					showLoading(false);
-					console.log(data);
+					if (data.status) {
+						showMessage("Thêm lời mời kết bạn thành công!");
+						location.reload();
+					} else {
+						showMessage("Có lỗi trên server!");	
+					}
 				},
 				error: function (err) {
 					showLoading(false);

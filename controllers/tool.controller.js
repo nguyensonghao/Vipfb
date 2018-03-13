@@ -32,6 +32,15 @@ module.exports = {
 		})
 	},
 
+	log: function (req, res) {
+		LogModel.find(function (err, list) {
+			list = list ? list : [];
+			res.render('tool/log', {
+				listLog: list
+			})
+		})
+	},
+
 	addFriend: function (req, res) {
 		var token = req.body.token;
 		var userId = req.body.userId;
