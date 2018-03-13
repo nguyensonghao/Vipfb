@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>Send Request Add Friends</title>
+        <link rel="stylesheet" type="text/css" href="/libs/bootstrap-3.3.7/dist/css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="/css/addFriends.css">
+    </head>
+    <body>
+        <% include ../components/menu %>
+        <div class="container">
+            <form class="col-md-8 col-md-offset-2">
+                <legend>Thêm Token người dùng!</legend>
+                <div class="form-group">
+                    <textarea class="form-control" name="token" placeholder="Nhập token" rows="5"></textarea>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-load-information">Load thông tin người dùng</button>
+                <button type="button" class="btn btn-primary btn-add-token hiden">Thêm token</button>
+                <div class="information-user hiden">
+                    <hr/>
+                    <h4>Thông tin người dùng</h4>
+                    <textarea class="form-control" rows="20" readonly></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="overlay-loader">
+            <div class="loader">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="/libs/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/libs/bootstrap-3.3.7/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/token.js"></script>
+</html>

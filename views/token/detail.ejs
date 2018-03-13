@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Send Request Add Friends</title>
+        <link rel="stylesheet" type="text/css" href="/libs/bootstrap-3.3.7/dist/css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="/css/addFriends.css">
+    </head>
+    <body>
+        <div class="container">
+            <form class="col-md-8 col-md-offset-2">
+                <legend>Chi tiết token!</legend>
+                <% if (token) {%>
+                    <input type="hidden" name="id" value="<%= token._id %>">
+                    <div class="form-group">
+                        <textarea class="form-control" name="token" placeholder="Nhập token" rows="5"><%= token.token %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <p>Ngày tạo: <%= new Date(token.create_at).toString() %></p>
+                        <% if (token.lastUse) { %>
+                            <p>Ngày sử dụng: <%= new Date(token.lastUse).toString() %></p>
+                        <% } %>
+                        <p>Trạng thái: <%= token.active ? 'Hoạt động' : 'Không hoạt động' %></p>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-update-token">Sửa token</button>
+                    <!-- <button type="button" class="btn btn-danger btn-delete-token">Xóa token</button> -->
+                    <div class="information-user">
+                        <hr/>
+                        <h4>Thông tin người dùng</h4>
+                        <textarea class="form-control" rows="40" readonly><%= JSON.stringify(token.information, undefined, 4) %></textarea>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-info">
+                        <strong>Thông báo!</strong> không tồn tại token này
+                    </div>
+                <% } %>
+            </form>
+        </div>
+    </body>
+    <script type="text/javascript" src="/libs/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/libs/bootstrap-3.3.7/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/token.js"></script>
+</html>

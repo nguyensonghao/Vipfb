@@ -4,14 +4,16 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const tool = require('./routes/tool');
+const api = require('./routes/api');
+const token = require('./routes/token');
 const app = express();
-// mongoose.Promise = global.Promise;
-// mongoose.connect(process.env.MONGODB_URI);
-// mongoose.connection.on('error', (err) => {
-// 	console.error(err);
-// 	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-// 	process.exit();
-// });
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URI);
+mongoose.connection.on('error', (err) => {
+	console.error(err);
+	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+	process.exit();
+});
 
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
@@ -21,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/tool', tool);
+app.use('/api', api);
+app.use('/token', token);
 
 app.listen(process.env.PORT, process.env.HOST, function () {
     console.log('Server is running on port', process.env.PORT);
