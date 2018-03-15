@@ -23,7 +23,7 @@ $(document).ready(function () {
 						showMessage("Thêm lời mời kết bạn thành công!");
 						location.reload();
 					} else {
-						showMessage("Có lỗi trên server!");	
+						showMessage(data.msg);	
 					}
 				},
 				error: function (err) {

@@ -7,6 +7,7 @@ var urlRequest = "https://vipfb.in/request_panel.php";
 var url = "https://vipfb.in";
 var TokenModel = require('../models/token.model');
 var LogModel = require('../models/log.model');
+var UtilHelper = require('../helpers/util.helper');
 
 module.exports = {
 	showAddFriend: function (req, res) {
@@ -44,54 +45,66 @@ module.exports = {
 	addFriend: function (req, res) {
 		var token = req.body.token;
 		var userId = req.body.userId;
-		var _ph, _page;
-		phantom.create().then(ph => {
-		    _ph = ph;
-		    return _ph.createPage();
-		}).then(page => {
-		    _page = page;
-		    _page.property('viewportSize', {width: 900, height: 600}).then(function() {
-		        return _page.open(url);
-		    });
-		}).then(status => {
-			setTimeout(function () {
-				_page.evaluate(function(token) {
-		            document.querySelectorAll('#LoginD input[type="text"]')[0].value = token;
-		            document.querySelectorAll('#LoginD button[type="submit"]')[0].click();
-		            return 0;
-		        }, token);
+		UtilHelper.getInformationByToken(token).then(function (data) {
+			if (data) {
+				var _ph, _page;
+				phantom.create().then(ph => {
+				    _ph = ph;
+				    return _ph.createPage();
+				}).then(page => {
+				    _page = page;
+				    _page.property('viewportSize', {width: 900, height: 600}).then(function() {
+				        return _page.open(url);
+				    });
+				}).then(status => {
+					try {
+						setTimeout(function () {
+							_page.evaluate(function(token) {
+					            document.querySelectorAll('#LoginD input[type="text"]')[0].value = token;
+					            document.querySelectorAll('#LoginD button[type="submit"]')[0].click();
+					            return 0;
+					        }, token);
 
-		    	setTimeout(function () {
-		            var time = new Date().getTime();
-		            var imageName = './captchaImage/' + time + ".png";
-		            captureRequest(userId, _page, imageName, function () {
-		            	TokenModel.update({token: token}, {
-		            		$set: {
-		            			lastUse: new Date()
-		            		}
-		            	}, function () {
-		            		var logModel = new LogModel({
-		            			token: token,
-							    userId: userId,
-							    time: new Date()
-		            		})
+					    	setTimeout(function () {
+					            var time = new Date().getTime();
+					            var imageName = './captchaImage/' + time + ".png";
+					            captureRequest(userId, _page, imageName, function () {
+					            	TokenModel.update({token: token}, {
+					            		$set: {
+					            			lastUse: new Date()
+					            		}
+					            	}, function () {
+					            		var logModel = new LogModel({
+					            			token: token,
+										    userId: userId,
+										    time: new Date()
+					            		})
 
-		            		logModel.save(function () {
-		            			setTimeout(function () {
-				            		_page.close();
-						    		_ph.exit();
-						    		res.json({status: true});
-								}, 1000);
-		            		})
-		            	})
-		            })
-		        }, 5000);
-			}, 5000);
-		}).catch(() => {
-		    _page.close();
-		    _ph.exit();
-		    res.json({status: false});
-		});
+					            		logModel.save(function () {
+					            			setTimeout(function () {
+							            		_page.close();
+									    		_ph.exit();
+									    		res.json({status: true});
+											}, 1000);
+					            		})
+					            	})
+					            })
+					        }, 5000);
+						}, 5000);
+					} catch (e) {
+						_page.close();
+					    _ph.exit();
+					    res.json({status: false, msg: 'Có lỗi trên server!'});	
+					}
+				}).catch(() => {
+				    _page.close();
+				    _ph.exit();
+				    res.json({status: false, msg: 'Có lỗi trên server!'});
+				});
+			} else {
+				res.json({status: false, msg: 'Token hết hạn!'});
+			}
+		})
 	}
 }
 

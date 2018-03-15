@@ -81,6 +81,7 @@ $(document).ready(function () {
 			showLoading(true);
 			addToken.getInformation(token, function (data) {
 				showLoading(false);
+				console.log(data.data);
 				if (data.status && data.data && data.data.id) {
 					$('textarea[name="token"]').prop("disabled", true);
 					$('.information-user').show();
@@ -105,6 +106,7 @@ $(document).ready(function () {
 			showLoading(false);
 			if (data.status) {
 				showMessage("Thêm token thành công!");
+				location.reload();
 			} else {
 				showMessage(data.msg);
 			}
